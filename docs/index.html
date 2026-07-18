@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="บทเรียน Git ตั้งแต่สร้าง repository ถึงตรวจสอบ commit ด้วย .git และ Codex">
+  <title>Git Field Guide — Branch, Commit และ .git</title>
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="index.html">Git <span>Field Guide</span></a>
+      <div class="header-actions">
+        <input class="search" data-search aria-label="ค้นหาบทเรียน" placeholder="ค้นหาบทเรียน...">
+        <button class="button" onclick="print()">พิมพ์ / PDF</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="toc">
+      <p class="toc-title">บทเรียนนี้</p>
+      <nav>
+        <a href="#start">เริ่มจากโจทย์เดียวกัน</a>
+        <a href="#course">บทเรียนทั้งหมด 01–07</a>
+        <a href="#commands">Command Cheat Sheet</a>
+        <a href="#graph">1. Branch → commit</a>
+        <a href="#inspect">2. ตรวจ commit และ .git</a>
+        <a href="#flow">3. Flow ตั้งแต่ก่อน repo</a>
+        <a href="#publish">ขึ้น Git / GitHub Pages</a>
+        <a href="#safety">กติกาปลอดภัย</a>
+      </nav>
+    </aside>
+
+    <main>
+      <section class="hero" id="start">
+        <div class="kicker">Git lesson • one connected example</div>
+        <h1>จากโฟลเดอร์ว่าง<br>สู่ commit ที่ตรวจสอบได้</h1>
+        <p class="lead">บทเรียนนี้ใช้ตัวอย่างเดียวตลอดเส้นทาง: สร้างเว็บ <code>release-notes</code> แยกงานบน branch แล้วตรวจสอบว่า commit มีอะไรเปลี่ยน ก่อนส่งขึ้น GitHub</p>
+        <div class="actions">
+          <a class="button primary" href="#graph">ดูภาพ branch และ commit</a>
+          <a class="button" href="#flow">ดู flow ทั้งหมด</a>
+        </div>
+      </section>
+
+      <section class="section" id="commands">
+        <p class="eyebrow">COMMAND CHEAT SHEET</p>
+        <h2>คำสั่ง Git ครบตามระดับ Beginner → Advanced</h2>
+        <p class="lead">คำสั่งจากภาพอ้างอิงถูกตรวจเทียบและเติมไว้ในบทเรียนแล้ว ตัวอย่างใช้ placeholder เช่น <code>&lt;file&gt;</code>, <code>&lt;branch&gt;</code> และ <code>&lt;commit&gt;</code> ให้แทนค่าจริงก่อนรัน</p>
+        <h3>Beginner · เริ่มต้นและบันทึกงาน</h3>
+        <table>
+          <thead><tr><th>คำสั่ง</th><th>ใช้ทำอะไร</th><th>บทเรียนที่เกี่ยวข้อง</th></tr></thead>
+          <tbody>
+            <tr><td><code>git init</code></td><td>สร้าง local repository ใหม่</td><td><a href="git-basics.html">Git Basics</a></td></tr>
+            <tr><td><code>git clone &lt;url&gt;</code></td><td>คัดลอก remote repository ลงเครื่อง</td><td><a href="#publish">Publish</a></td></tr>
+            <tr><td><code>git config --global user.name "ชื่อ"</code><br><code>git config --global user.email "อีเมล"</code></td><td>ตั้งตัวตนที่จะปรากฏใน commit</td><td><a href="git-basics.html">Git Basics</a></td></tr>
+            <tr><td><code>git status</code></td><td>ดูสถานะไฟล์และ branch ปัจจุบัน</td><td><a href="diff-and-review.html">Diff & Review</a></td></tr>
+            <tr><td><code>git add &lt;file&gt;</code><br><code>git add .</code></td><td>นำไฟล์หนึ่งไฟล์หรือทุกไฟล์เข้า staging; ตรวจ diff ก่อนใช้แบบทั้งหมด</td><td><a href="git-basics.html">Git Basics</a></td></tr>
+            <tr><td><code>git commit -m "ข้อความ"</code></td><td>บันทึก snapshot ลง local history</td><td><a href="diff-and-review.html">Diff & Review</a></td></tr>
+            <tr><td><code>git log --oneline</code></td><td>ดูประวัติ commit แบบย่อ</td><td><a href="diff-and-review.html">Diff & Review</a></td></tr>
+            <tr><td><code>git diff</code></td><td>ดูการแก้ไขที่ยังไม่ stage</td><td><a href="diff-and-review.html">Diff & Review</a></td></tr>
+            <tr><td><code>git show &lt;commit&gt;</code></td><td>ดู metadata และเนื้อหาที่ commit เปลี่ยน</td><td><a href="#inspect">Inspect</a></td></tr>
+          </tbody>
+        </table>
+        <h3>Intermediate · ทำงานร่วมกับ branch และ remote</h3>
+        <table>
+          <thead><tr><th>คำสั่ง</th><th>ใช้ทำอะไร</th><th>ข้อควรจำ</th></tr></thead>
+          <tbody>
+            <tr><td><code>git branch</code><br><code>git branch &lt;name&gt;</code></td><td>แสดง branch หรือสร้าง branch ใหม่</td><td>เปลี่ยน branch ด้วย <code>git switch</code> หรือ <code>git checkout</code></td></tr>
+            <tr><td><code>git switch &lt;name&gt;</code><br><code>git checkout &lt;name&gt;</code></td><td>เปลี่ยนไปยัง branch ที่มีอยู่</td><td><code>checkout</code> เป็นคำสั่งเก่าที่ยังพบในเอกสาร/โปรเจกต์เดิม</td></tr>
+            <tr><td><code>git merge &lt;branch&gt;</code></td><td>รวม branch เข้ากับ branch ปัจจุบัน</td><td>ตรวจ conflict และ test ก่อน commit merge</td></tr>
+            <tr><td><code>git stash</code><br><code>git stash pop</code><br><code>git stash apply</code></td><td>พักงานที่ยังไม่ commit แล้วนำกลับมา</td><td><code>apply</code> เก็บรายการไว้; <code>pop</code> นำกลับแล้วลบเมื่อสำเร็จ</td></tr>
+            <tr><td><code>git reset --soft &lt;commit&gt;</code></td><td>ย้อน HEAD แต่คงงานไว้ใน staging</td><td>เหมาะกับ local commit ที่ยังไม่แชร์</td></tr>
+            <tr><td><code>git reset --hard &lt;commit&gt;</code></td><td>ย้อน HEAD และลบงานใน working tree</td><td>อันตราย: ตรวจ/สำรองก่อนเสมอ</td></tr>
+            <tr><td><code>git pull</code></td><td>ดึงแล้วรวมการเปลี่ยนจาก remote</td><td>ใช้ <code>git pull --rebase</code> เมื่อ workflow ของทีมกำหนด</td></tr>
+            <tr><td><code>git push</code></td><td>ส่ง commit จาก local ไป remote</td><td>ครั้งแรกใช้ <code>git push -u origin &lt;branch&gt;</code></td></tr>
+            <tr><td><code>git rm &lt;file&gt;</code></td><td>ลบไฟล์จาก working tree และ staging</td><td>ตรวจ <code>git diff --cached</code> ก่อน commit</td></tr>
+            <tr><td><code>git branch -m &lt;new-name&gt;</code><br><code>git branch -d &lt;name&gt;</code></td><td>เปลี่ยนชื่อหรือลบ branch local</td><td>ลบ branch หลัง merge แล้วเท่านั้น</td></tr>
+          </tbody>
+        </table>
+        <h3>Advanced · จัดการประวัติ วิเคราะห์ bug และ release</h3>
+        <table>
+          <thead><tr><th>คำสั่ง</th><th>ใช้ทำอะไร</th><th>ใช้เมื่อ</th></tr></thead>
+          <tbody>
+            <tr><td><code>git rebase &lt;branch&gt;</code></td><td>นำ commit ของ branch ปัจจุบันไปเรียงต่อบนอีก branch</td><td>จัดประวัติ local ให้เป็นเส้นตรง; ห้าม rebase ประวัติที่ทีมแชร์แล้วโดยไม่ตกลง</td></tr>
+            <tr><td><code>git cherry-pick &lt;commit&gt;</code></td><td>หยิบ commit เฉพาะจุดมาใช้บน branch ปัจจุบัน</td><td>backport fix หรือเลือก patch ที่ต้องการ</td></tr>
+            <tr><td><code>git revert &lt;commit&gt;</code></td><td>สร้าง commit ใหม่เพื่อยกเลิกผลของ commit เดิม</td><td>ปลอดภัยกว่าสำหรับ commit ที่ push/shared แล้ว</td></tr>
+            <tr><td><code>git reflog</code></td><td>ดูการเคลื่อนที่ของ HEAD และ commit ที่เคยอ้างอิง</td><td>กู้ commit หลัง reset หรือเปลี่ยน branchผิด</td></tr>
+            <tr><td><code>git bisect start</code><br><code>git bisect bad</code><br><code>git bisect good &lt;commit&gt;</code></td><td>ค้นหา commit แรกที่ทำให้เกิด bug ด้วย binary search</td><td>ต้องมี test/เกณฑ์บอกว่า revision ใด good หรือ bad</td></tr>
+            <tr><td><code>git blame &lt;file&gt;</code></td><td>ดูว่าแต่ละบรรทัดมาจาก commit ใด</td><td>ตามประวัติ/บริบท ไม่ใช่ใช้กล่าวโทษผู้เขียน</td></tr>
+            <tr><td><code>git tag &lt;tag_name&gt;</code><br><code>git tag -a v1.0.0 -m "message"</code></td><td>ติดป้าย release ให้ commit</td><td>สร้าง tag หลังตรวจ main และ test แล้ว</td></tr>
+            <tr><td><code>git push origin --tags</code></td><td>ส่ง tag ทั้งหมดไปยัง remote</td><td>ตรวจว่าไม่มี tag ทดลองหรือข้อมูลที่ไม่ควรเผยแพร่</td></tr>
+            <tr><td><code>git gc</code></td><td>เก็บกวาดและ optimize object ใน local repository</td><td>ให้ Git จัดการอัตโนมัติเป็นส่วนใหญ่; ไม่ใช่คำสั่งแก้ไฟล์หาย</td></tr>
+          </tbody>
+        </table>
+        <div class="callout warn"><strong>กติกาสำคัญ:</strong> คำสั่งที่แก้ประวัติหรือลบงาน เช่น <code>reset --hard</code>, <code>rebase</code>, <code>git rm</code> และ <code>git gc</code> ควรตรวจ <code>git status</code>, สำรอง/สร้าง recovery branch และอ่านผลลัพธ์ก่อนยืนยันทุกครั้ง</div>
+      </section>
+
+      <section class="section" id="course">
+        <p class="eyebrow">COMPLETE COURSE MAP</p>
+        <h2>บทเรียนเดิมครบทุกบท ไม่ตัดออก</h2>
+        <p class="lead">ใช้หน้านี้เป็นแผนที่หลักสูตร แล้วเปิดบทใดบทหนึ่งเพื่ออ่านตัวอย่างและแบบฝึกหัดฉบับเต็ม ทั้ง 7 บทยังอยู่ในโฟลเดอร์ <code>docs/</code></p>
+        <div class="grid">
+          <a class="card" data-search-item href="git-basics.html"><span class="number">01 · FOUNDATION</span><h3>Git คืออะไรและสร้าง repository แรก</h3><p>Working Directory → Staging Area → Local Repository, การติดตั้ง/ตั้งค่า, <code>git init</code> และการอ่านสถานะไฟล์</p></a>
+          <a class="card" data-search-item href="diff-and-review.html"><span class="number">02 · INSPECT</span><h3>Diff และการ review งาน</h3><p><code>git diff</code>, staged diff, review loop, test และ Conventional Commits ที่สื่อความหมาย</p></a>
+          <a class="card" data-search-item href="branching.html"><span class="number">03 · COLLABORATE</span><h3>Branch, merge และ conflict</h3><p>สร้าง branch, fetch/pull/push, Pull Request และแก้ conflict อย่างอ่าน logic ก่อนเลือก</p></a>
+          <a class="card" data-search-item href="undo-and-recovery.html"><span class="number">04 · RECOVER</span><h3>ย้อนและกู้คืนงาน</h3><p>restore, reset, revert, reflog และ stash เลือกคำสั่งตามจุดที่งานอยู่</p></a>
+          <a class="card" data-search-item href="vscode-workflow.html"><span class="number">05 · EDITOR</span><h3>Git workflow ใน VS Code</h3><p>เปิด folder ให้ถูก, Source Control, diff editor และ terminal แบบตรวจสอบได้</p></a>
+          <a class="card" data-search-item href="codex-workflow.html"><span class="number">06 · AI COLLAB</span><h3>Codex กับ repository</h3><p>กำหนด scope, acceptance criteria, ทดสอบ, ตรวจ diff และให้คนอนุมัติ commit</p></a>
+          <a class="card" data-search-item href="troubleshooting.html"><span class="number">07 · FIELD NOTES</span><h3>Troubleshooting</h3><p>วิเคราะห์ PATH, repository, remote, non-fast-forward และ authentication จากหลักฐาน</p></a>
+        </div>
+      </section>
+
+      <section class="section" id="graph">
+        <p class="eyebrow">01 · BRANCH → COMMIT</p>
+        <h2>UI เส้น branch ที่ประกอบกับตัวอย่างจริง</h2>
+        <p class="lead">สมมติว่า repository ชื่อ <code>release-notes</code> เริ่มจากหน้า README แล้วเพิ่มฟีเจอร์ค้นหาใน branch แยก</p>
+
+        <div class="branch-map" role="img" aria-label="แผนภาพ main และ feature/search พร้อม commit">
+          <div class="branch-row"><span class="branch-label main-label">main</span><span class="node base"></span><span class="line main-line"></span><span class="node merged"></span><span class="commit-card"><b>c3f8a21</b><small>merge: search release notes</small></span></div>
+          <div class="branch-row feature-row"><span class="branch-label feature-label">feature/search</span><span class="node fork"></span><span class="line feature-line"></span><span class="node feature-node"></span><span class="commit-card"><b>9b12d44</b><small>feat: add release search</small></span></div>
+          <div class="branch-row feature-row second"><span class="branch-label"></span><span class="line feature-line short"></span><span class="node feature-node"></span><span class="commit-card"><b>5a0c7de</b><small>test: cover empty query</small></span></div>
+        </div>
+
+        <div class="callout good"><strong>อ่านภาพนี้อย่างไร:</strong> จุดคือ commit ที่เก็บ snapshot ของงาน ส่วนเส้นคือประวัติที่เชื่อมกัน เมื่อพร้อมจึงรวม <code>feature/search</code> กลับเข้า <code>main</code> เป็น <code>c3f8a21</code></div>
+        <table>
+          <thead><tr><th>รายการ</th><th>ความหมายในตัวอย่าง</th><th>คำสั่งที่ใช้</th></tr></thead>
+          <tbody>
+            <tr><td>branch</td><td>เส้นงานอิสระที่ทดลองฟีเจอร์ค้นหา</td><td><code>git switch -c feature/search</code></td></tr>
+            <tr><td>commit</td><td>จุดบันทึกที่มีข้อความและผู้แก้</td><td><code>git commit -m "feat: add release search"</code></td></tr>
+            <tr><td>merge</td><td>นำประวัติฟีเจอร์กลับไปยัง main</td><td><code>git switch main</code><br><code>git merge feature/search</code></td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="section" id="inspect">
+        <p class="eyebrow">02 · INSPECT BEFORE PUSH</p>
+        <h2>ตรวจสอบ commit และประโยชน์ของการดูใน <code>.git</code></h2>
+        <p>โฟลเดอร์ <code>.git</code> คือฐานข้อมูลภายในของ repository เก็บประวัติ commit, branch, HEAD และข้อมูลที่ใช้ตรวจย้อนกลับได้ การตรวจไม่ได้แปลว่าเปิดไฟล์ข้างในไปแก้ แต่ใช้คำสั่ง Git อ่านอย่างปลอดภัย</p>
+        <pre><code># อยู่ที่ root ของ release-notes
+git status --short
+git diff --check
+git diff --cached
+git log --oneline --decorate --graph -6
+git show --stat --oneline 9b12d44
+git fsck --no-reflogs --full</code></pre>
+        <table>
+          <thead><tr><th>ตรวจอะไร</th><th>คำสั่ง</th><th>ประโยชน์</th></tr></thead>
+          <tbody>
+            <tr><td>งานค้างในโฟลเดอร์</td><td><code>git status</code></td><td>รู้ว่าไฟล์ใด modified, staged หรือ untracked ก่อน commit</td></tr>
+            <tr><td>เนื้อหาที่จะส่ง</td><td><code>git diff --cached</code></td><td>จับไฟล์เกิน, secret และการเปลี่ยนที่ไม่ตั้งใจ</td></tr>
+            <tr><td>ประวัติและผู้ปกครอง</td><td><code>git log --graph</code></td><td>เห็นว่า commit อยู่บน branch ใดและ merge มาจากไหน</td></tr>
+            <tr><td>รายละเอียด commit</td><td><code>git show 9b12d44</code></td><td>ตรวจ diff, author, เวลา และไฟล์ที่เปลี่ยนจริง</td></tr>
+            <tr><td>ความสมบูรณ์ของฐานข้อมูล</td><td><code>git fsck --full</code></td><td>ตรวจ object ใน .git ว่าเสียหายหรือมี object ที่หาไม่เจอหรือไม่</td></tr>
+          </tbody>
+        </table>
+        <div class="callout warn"><strong>เมื่อใช้ Codex:</strong> ให้ขอบเขตชัดเจนว่า “ตรวจ <code>git status</code>, <code>git diff</code> และทดสอบก่อนแก้ไฟล์” จากนั้นอ่าน diff หลังแก้ทุกครั้ง Codex ช่วยวิเคราะห์ได้ แต่คนยังเป็นผู้อนุมัติ commit และ push</div>
+      </section>
+
+      <section class="section" id="flow">
+        <p class="eyebrow">03 · END-TO-END FLOW</p>
+        <h2>ตัวอย่าง 1 flow ตั้งแต่ยังไม่มี repo จนเสร็จ</h2>
+        <div class="flow-list">
+          <article class="flow-step"><span>01</span><div><h3>ก่อนมี repository</h3><p>สร้างโฟลเดอร์ วาง <code>README.md</code> และตรวจว่าอยู่ถูกที่</p><pre><code>mkdir release-notes
+cd release-notes
+git init -b main</code></pre></div></article>
+          <article class="flow-step"><span>02</span><div><h3>บันทึกจุดเริ่มต้น</h3><p>stage เฉพาะไฟล์ที่ต้องการ แล้วสร้าง commit แรก</p><pre><code>git add README.md
+git diff --cached
+git commit -m "docs: add release notes readme"</code></pre></div></article>
+          <article class="flow-step"><span>03</span><div><h3>แยกงานค้นหา</h3><p>สร้าง branch เพื่อไม่กระทบ main และให้ Codex ช่วยทำงานที่มีขอบเขต</p><pre><code>git switch -c feature/search
+# Codex: เพิ่ม search.js พร้อม test
+git status
+git diff</code></pre></div></article>
+          <article class="flow-step"><span>04</span><div><h3>ตรวจ แล้ว commit</h3><p>ตรวจ diff, รัน test และบันทึกเป็น commit เล็กที่อธิบายได้</p><pre><code>git diff --check
+npm test
+git add search.js search.test.js
+git commit -m "feat: add release search"</code></pre></div></article>
+          <article class="flow-step"><span>05</span><div><h3>ทบทวนประวัติและรวมงาน</h3><p>ตรวจ commit <code>9b12d44</code> แล้ว merge กลับ main</p><pre><code>git show --stat 9b12d44
+git switch main
+git merge --no-ff feature/search -m "merge: search release notes"
+git log --oneline --graph -6</code></pre></div></article>
+          <article class="flow-step"><span>06</span><div><h3>ส่งขึ้น remote เมื่อพร้อม</h3><p>เพิ่ม URL GitHub แล้ว push พร้อมตรวจสถานะปลายทาง</p><pre><code>git remote add origin &lt;github-url&gt;
+git push -u origin main
+git status</code></pre></div></article>
+        </div>
+        <div class="callout good"><strong>ผลลัพธ์สุดท้าย:</strong> GitHub มี <code>main</code> ที่รวมฟีเจอร์ค้นหา และในเครื่องมีประวัติที่ย้อนดูได้ตั้งแต่ <code>c3f8a21</code> กลับไปถึง commit แรก โดยทุกขั้นตรวจสอบก่อนส่ง</div>
+      </section>
+
+      <section class="section" id="publish">
+        <p class="eyebrow">04 · PUBLISH CHECKLIST</p>
+        <h2>จาก local repository ขึ้น GitHub และเผยแพร่บทเรียน</h2>
+        <p>ก่อน push จริง ให้เพิ่มไฟล์กันของไม่ควรขึ้น Git และตรวจ remote/สิทธิ์ให้ครบ ขั้นตอนนี้ต่อจาก flow ด้านบนโดยตรง</p>
+        <pre><code># สร้าง .gitignore ก่อน stage
+@'
+.env
+*.log
+node_modules/
+dist/
+'@ | Set-Content .gitignore
+
+git status
+git add .gitignore docs/
+git diff --cached
+git commit -m "docs: publish complete git field guide"
+
+# เชื่อม GitHub และส่ง main
+git remote add origin https://github.com/&lt;username&gt;/&lt;repository&gt;.git
+git remote -v
+git push -u origin main</code></pre>
+        <div class="grid">
+          <div class="card"><span class="number">REMOTE</span><h3>ถ้า remote มีอยู่แล้ว</h3><p>ใช้ <code>git remote -v</code> ตรวจ URL และ <code>git remote set-url origin &lt;url&gt;</code> แก้ปลายทาง อย่าใส่ token ไว้ใน URL หรือไฟล์</p></div>
+          <div class="card"><span class="number">AUTH</span><h3>ถ้า authentication ไม่ผ่าน</h3><p>ใช้ Git Credential Manager หรือ SSH ตามนโยบายองค์กร ตรวจบัญชีและสิทธิ์ของ repository แทนการลอง password ซ้ำ</p></div>
+          <div class="card"><span class="number">RELEASE</span><h3>ทำจุดเผยแพร่ให้จำง่าย</h3><p>หลังตรวจ main แล้วใช้ <code>git tag -a v1.0.0 -m "first complete guide"</code> และ <code>git push origin v1.0.0</code></p></div>
+          <div class="card"><span class="number">PAGES</span><h3>เผยแพร่เว็บด้วย GitHub Pages</h3><p>ตั้งค่า Pages ให้ source เป็น branch <code>main</code> และ folder <code>/docs</code> แล้วเปิด <code>docs/index.html</code> เป็นหน้าเริ่มต้น</p></div>
+        </div>
+        <div class="callout good"><strong>เกณฑ์เสร็จ:</strong> clone จาก GitHub ลงเครื่องใหม่ได้, <code>git status</code> สะอาด, เปิดหน้า <code>docs/index.html</code> ได้, ลิงก์บท 01–07 ไม่เสีย และประวัติ main อธิบายการเปลี่ยนแปลงได้</div>
+      </section>
+
+      <section class="section" id="safety">
+        <p class="eyebrow">SAFETY RAILS</p>
+        <h2>เช็กลิสต์ก่อนให้ commit ออกจากเครื่อง</h2>
+        <ul class="checklist">
+          <li><code>git status</code> ไม่มีไฟล์ที่ไม่ตั้งใจรวม</li>
+          <li><code>git diff --cached</code> ไม่มี token, password หรือข้อมูลส่วนตัว</li>
+          <li><code>git diff --check</code> ผ่าน และ test ที่เกี่ยวข้องผ่าน</li>
+          <li>ข้อความ commit บอก “ทำอะไร” ไม่ใช่แค่ “แก้แล้ว”</li>
+          <li>ถ้างานถูก push และแชร์แล้ว ให้ใช้ <code>git revert</code> แทนการเขียนประวัติทับด้วย reset</li>
+        </ul>
+      </section>
+
+      <footer class="footer">Git Field Guide · บทเรียน static ภาษาไทย · <a href="../README.md">อ่าน README</a></footer>
+    </main>
+  </div>
+  <button class="top" aria-label="กลับด้านบน">↑</button>
+  <script src="assets/script.js"></script>
+</body>
+</html>
