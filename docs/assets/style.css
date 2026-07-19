@@ -24,3 +24,13 @@ main>.footer{order:9}
 th,td{padding:9px 11px}
 @media(max-width:820px){.hero h1{font-size:clamp(1.8rem,8vw,2.5rem)}.section h2{font-size:1.3rem}.lead{font-size:.98rem}}
 main>#push-branch{order:5}
+main>#flags{order:2}
+main>#commit-ai{order:3}
+main>#daily{order:4}
+main>#course{order:5}
+main>#graph{order:6}
+main>#inspect{order:7}
+main>#push-branch{order:8}
+main>#flow{order:9}
+main>#publish{order:10}
+main>#safety{order:11}

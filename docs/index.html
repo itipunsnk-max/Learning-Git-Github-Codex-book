@@ -24,6 +24,9 @@
       <nav>
         <a href="#start">เริ่มจากโจทย์เดียวกัน</a>
         <a href="#commands">Command Cheat Sheet</a>
+        <a href="#flags">07 · Flags ที่ใช้บ่อย</a>
+        <a href="#commit-ai">08 · Commit message + AI</a>
+        <a href="#daily">09 · Daily workflow</a>
         <a href="#course">บทเรียนทั้งหมด 01–07</a>
         <a href="#graph">1. Branch → commit</a>
         <a href="#inspect">2. ตรวจ commit และ .git</a>
@@ -97,6 +100,64 @@
         </table>
 
         <div class="callout warn"><strong>กติกาสำคัญ:</strong> คำสั่งที่แก้ประวัติหรือลบงาน เช่น <code>reset --hard</code>, <code>rebase</code>, <code>git rm</code> และ <code>git gc</code> ควรตรวจ <code>git status</code>, สำรอง/สร้าง recovery branch และอ่านผลลัพธ์ก่อนยืนยันทุกครั้ง</div>
+      </section>
+
+      <section class="section" id="flags">
+        <p class="eyebrow">07 · PRACTICAL FLAGS</p>
+        <h2>Flag ที่ใช้บ่อย</h2>
+        <table>
+          <thead><tr><th>Flag</th><th>ความหมาย</th><th>ตัวอย่าง</th></tr></thead>
+          <tbody>
+            <tr><td><code>-u</code></td><td>ผูก local branch กับ remote branch (upstream)</td><td><code>git push -u origin main</code></td></tr>
+            <tr><td><code>-v</code></td><td>แสดงรายละเอียดมากขึ้น (verbose)</td><td><code>git remote -v</code></td></tr>
+            <tr><td><code>-m</code></td><td>ใส่ commit message หรือชื่อข้อความ</td><td><code>git commit -m "docs: update lesson"</code></td></tr>
+            <tr><td><code>-a</code></td><td>นำไฟล์ tracked ที่แก้แล้วเข้า staging พร้อม commit</td><td><code>git commit -am "fix: update link"</code></td></tr>
+            <tr><td><code>-b</code></td><td>สร้าง branch ใหม่พร้อม checkout</td><td><code>git switch -c feature/search</code></td></tr>
+            <tr><td><code>-d</code> / <code>-D</code></td><td>ลบ branch; <code>-D</code> บังคับลบแม้ยังไม่ merge</td><td><code>git branch -d feature/search</code></td></tr>
+            <tr><td><code>--force</code></td><td>บังคับ push และอาจเขียนทับประวัติ remote</td><td><code>git push --force origin main</code></td></tr>
+            <tr><td><code>--force-with-lease</code></td><td>force push แบบปลอดภัยกว่า โดยเช็กว่า remote ยังไม่ถูก push ทับ</td><td><code>git push --force-with-lease origin HEAD:main</code></td></tr>
+          </tbody>
+        </table>
+        <div class="callout warn"><strong>จำไว้:</strong> <code>--force</code> ไม่ใช่คำสั่งแก้ branch ผิด ควรตรวจ <code>git branch --show-current</code>, <code>git log --oneline --decorate --all</code> และ remote ก่อนเสมอ</div>
+      </section>
+
+      <section class="section" id="commit-ai">
+        <p class="eyebrow">08 · COMMIT WITH AI</p>
+        <h2>Commit message เมื่อใช้ Codex / AI ช่วยเขียนโค้ด</h2>
+        <div class="callout">รูปแบบ Conventional Commits ช่วยให้ทีมอ่าน log และค้นหาการเปลี่ยนแปลงได้ง่าย</div>
+        <table>
+          <thead><tr><th>Prefix</th><th>ใช้เมื่อ</th><th>ตัวอย่าง</th></tr></thead>
+          <tbody>
+            <tr><td><code>feat:</code></td><td>เพิ่มฟีเจอร์ใหม่</td><td><code>feat: add release search</code></td></tr>
+            <tr><td><code>fix:</code></td><td>แก้ bug</td><td><code>fix: handle empty query</code></td></tr>
+            <tr><td><code>refactor:</code></td><td>ปรับโครงสร้างโดยไม่เปลี่ยนพฤติกรรม</td><td><code>refactor: split git helpers</code></td></tr>
+            <tr><td><code>docs:</code></td><td>แก้เอกสารหรือ comment</td><td><code>docs: add deploy guide</code></td></tr>
+            <tr><td><code>chore:</code></td><td>งานจุกจิก เช่น update dependency</td><td><code>chore: update site metadata</code></td></tr>
+            <tr><td><code>test:</code></td><td>เพิ่มหรือแก้ test</td><td><code>test: cover empty query</code></td></tr>
+          </tbody>
+        </table>
+        <div class="callout warn"><strong>เวลาให้ Codex/AI ช่วยเขียน commit:</strong> ตรวจ <code>git diff --staged</code> ด้วยตัวเองทุกครั้ง แล้วเขียน message ที่อธิบาย “สิ่งที่เปลี่ยน” ไม่ใช่แค่ “แก้ตาม AI”</div>
+        <pre><code>git diff --staged
+git commit -m "fix: แก้ date parsing error สำหรับปี พ.ศ. ใน Power Query"</code></pre>
+      </section>
+
+      <section class="section" id="daily">
+        <p class="eyebrow">09 · DAILY WORKFLOW</p>
+        <h2>งานประจำวัน: แก้ไข → commit → push</h2>
+        <p class="lead">ใช้ workflow นี้เมื่อ repository ตั้งค่า upstream ไว้แล้ว และต้องการส่งงานที่ตรวจสอบเรียบร้อยขึ้น GitHub</p>
+        <pre><code># 1. เช็กว่าไฟล์อะไรเปลี่ยน
+git status
+
+# 2. ดูรายละเอียดที่แก้ก่อน commit
+git diff
+
+# 3. stage และ commit
+git add .
+git commit -m "fix: แก้ date parsing error ในไฟล์ Power Query"
+
+# 4. push ขึ้น GitHub
+git push</code></pre>
+        <div class="callout good"><strong>ลำดับที่ควรจำ:</strong> status → diff → add → commit → push ถ้าเป็นงานสำคัญให้รัน test และตรวจ <code>git diff --staged</code> ก่อน commit เสมอ</div>
       </section>
 
       <section class="section" id="course">
@@ -210,6 +271,13 @@ HEAD อยู่ recovery-f64653d หรือไม่?
         </table>
         <div class="callout warn"><strong>ห้ามเริ่มด้วย <code>--force</code>:</strong> ต้องยืนยัน branch, commit, remote และผลกระทบก่อน เพราะ force push อาจเขียนทับประวัติบน GitHub และทำให้ commit ของผู้อื่นหายจาก branch ที่แชร์</div>
         <div class="callout good"><strong>เช็กลิสต์สั้น:</strong> รัน <code>git branch --show-current</code>, <code>git status -sb</code>, <code>git remote -v</code>, <code>git fetch origin</code> และ <code>git log --oneline --decorate --all -10</code> แล้วจึงเลือกปลายทางของ push ให้ตรงกับ commit ที่ต้องการ</div>
+        <h3>กรณีไม่ได้อยู่ที่ <code>main</code></h3>
+        <p>ถ้าตั้งใจให้ branch ปัจจุบันกลายเป็น <code>main</code> ให้ตรวจชื่อและสถานะก่อน แล้วจึง rename branch ปัจจุบัน:</p>
+        <pre><code>git branch --show-current
+git status
+git branch -M main
+git push -u origin main</code></pre>
+        <div class="callout warn"><strong>ระวัง:</strong> <code>git branch -M main</code> เปลี่ยนชื่อ branch ปัจจุบันเป็น <code>main</code> และใช้ <code>-M</code> เพื่อบังคับ rename หากมีชื่อ <code>main</code> อยู่แล้ว ควรตรวจ <code>git log</code> และยืนยันว่า branch ปัจจุบันคือ commit ที่ต้องการเผยแพร่</div>
       </section>
 
       <section class="section" id="flow">
