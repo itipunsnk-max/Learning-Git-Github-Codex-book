@@ -11,9 +11,10 @@ main>#inspect{order:4}
 main>#flow{order:5}
 main>#publish{order:6}
 main>#safety{order:7}
-main>.footer{order:8}
+main>#infographics{order:8}
+main>.footer{order:9}
 .hero{padding:32px 0 24px}
-.hero h1{font-size:clamp(1.8rem,3.6vw,3.2rem);line-height:1.18;letter-spacing:-.5px}
+.hero h1{font-size:clamp(1.5rem,3vw,2.5rem);line-height:1.18;letter-spacing:-.5px}
 .lead{font-size:1rem;max-width:700px}
 .section{margin:38px 0}
 .section h2{font-size:1.45rem;line-height:1.35}

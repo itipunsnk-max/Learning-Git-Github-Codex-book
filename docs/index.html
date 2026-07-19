@@ -36,7 +36,7 @@
     <main>
       <section class="hero" id="start">
         <div class="kicker">Git lesson • one connected example</div>
-        <h1>จากโฟลเดอร์ว่าง<br>สู่ commit ที่ตรวจสอบได้</h1>
+        <h1>Learnning Git - Status Diff Add Commit Push - Pull Fetch Rebase</h1>
         <p class="lead">บทเรียนนี้ใช้ตัวอย่างเดียวตลอดเส้นทาง: สร้างเว็บ <code>release-notes</code> แยกงานบน branch แล้วตรวจสอบว่า commit มีอะไรเปลี่ยน ก่อนส่งขึ้น GitHub</p>
         <div class="actions">
           <a class="button primary" href="#graph">ดูภาพ branch และ commit</a>
@@ -94,6 +94,7 @@
             <tr><td><code>git gc</code></td><td>เก็บกวาดและ optimize object ใน local repository</td><td>ให้ Git จัดการอัตโนมัติเป็นส่วนใหญ่; ไม่ใช่คำสั่งแก้ไฟล์หาย</td></tr>
           </tbody>
         </table>
+
         <div class="callout warn"><strong>กติกาสำคัญ:</strong> คำสั่งที่แก้ประวัติหรือลบงาน เช่น <code>reset --hard</code>, <code>rebase</code>, <code>git rm</code> และ <code>git gc</code> ควรตรวจ <code>git status</code>, สำรอง/สร้าง recovery branch และอ่านผลลัพธ์ก่อนยืนยันทุกครั้ง</div>
       </section>
 
@@ -227,6 +228,23 @@ git push -u origin main</code></pre>
           <li>ข้อความ commit บอก “ทำอะไร” ไม่ใช่แค่ “แก้แล้ว”</li>
           <li>ถ้างานถูก push และแชร์แล้ว ให้ใช้ <code>git revert</code> แทนการเขียนประวัติทับด้วย reset</li>
         </ul>
+      </section>
+
+      <section class="section" id="infographics">
+        <div style="margin:1.5rem 0; display:grid; gap:1rem;">
+          <h2>Infographic1</h2>
+          <figure style="margin:0;">
+            <img src="./images/git-diff-infographic-2026-07-19.png"
+                 alt="Infographic ตรวจ Git Diff"
+                 style="max-width:100%; height:auto; display:block;">
+          </figure>
+           <h2>Infographic 2</h2>
+          <figure style="margin:0;">
+            <img src="./images/git-rebase-infographic-2026-07-19.png"
+                 alt="Infographic Git Rebase"
+                 style="max-width:100%; height:auto; display:block;">
+          </figure>
+        </div>
       </section>
 
       <footer class="footer">Git Field Guide · บทเรียน static ภาษาไทย · <a href="../README.md">อ่าน README</a></footer>
