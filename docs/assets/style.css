@@ -23,3 +23,4 @@ main>.footer{order:9}
 .callout{padding:13px 15px}
 th,td{padding:9px 11px}
 @media(max-width:820px){.hero h1{font-size:clamp(1.8rem,8vw,2.5rem)}.section h2{font-size:1.3rem}.lead{font-size:.98rem}}
+main>#push-branch{order:5}

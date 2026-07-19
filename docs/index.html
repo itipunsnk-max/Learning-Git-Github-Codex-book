@@ -27,6 +27,7 @@
         <a href="#course">บทเรียนทั้งหมด 01–07</a>
         <a href="#graph">1. Branch → commit</a>
         <a href="#inspect">2. ตรวจ commit และ .git</a>
+        <a href="#push-branch">Push แล้ว GitHub ไม่อัปเดต</a>
         <a href="#flow">3. Flow ตั้งแต่ก่อน repo</a>
         <a href="#publish">ขึ้น Git / GitHub Pages</a>
         <a href="#safety">กติกาปลอดภัย</a>
@@ -157,6 +158,58 @@ git fsck --no-reflogs --full</code></pre>
           </tbody>
         </table>
         <div class="callout warn"><strong>เมื่อใช้ Codex:</strong> ให้ขอบเขตชัดเจนว่า “ตรวจ <code>git status</code>, <code>git diff</code> และทดสอบก่อนแก้ไฟล์” จากนั้นอ่าน diff หลังแก้ทุกครั้ง Codex ช่วยวิเคราะห์ได้ แต่คนยังเป็นผู้อนุมัติ commit และ push</div>
+      </section>
+
+      <section class="section" id="push-branch">
+        <p class="eyebrow">BRANCH MISMATCH · FIELD CASE</p>
+        <h2>Push แล้ว GitHub ไม่อัปเดต เพราะอยู่คนละ branch</h2>
+        <p class="lead">กรณีนี้มักไม่ได้เกิดจาก GitHub เสีย แต่เกิดจาก local <code>HEAD</code>, local branch และ remote branch ชี้คนละ commit หรือกำลัง push คนละ branch กับที่กำลังดูอยู่บน GitHub</p>
+
+        <h3>สถานการณ์ตัวอย่าง</h3>
+        <pre><code>git log --oneline --decorate --all -10
+
+6a76db7 (origin/main, origin/HEAD, main) save before rebase
+f64653d (HEAD, recovery-f64653d) readme updated
+487ee17 Update README.md
+56b4f07 Delete publish complete git field guide
+44b446d first commit
+9dd8e93 docs: publish complete</code></pre>
+        <p>อ่านผลลัพธ์นี้ให้ถูก: <code>HEAD</code> อยู่ที่ <code>recovery-f64653d</code> แต่ <code>main</code> และ <code>origin/main</code> ยังอยู่ที่ <code>6a76db7</code> ดังนั้นคำสั่ง <code>git push --force origin main</code> จะส่ง local <code>main</code> ไม่ใช่ commit ที่กำลังดูอยู่ที่ <code>recovery-f64653d</code></p>
+
+        <h3>Flow ตรวจสอบก่อนแก้</h3>
+        <pre><code>เริ่ม
+  ↓
+รัน git push origin main
+  ↓
+GitHub ไม่เปลี่ยน
+  ↓
+ตรวจ git branch --show-current
+  ↓
+HEAD อยู่ recovery-f64653d หรือไม่?
+  ├─ ใช่
+  │   ↓
+  │ ตรวจว่า local main เป็น commit เก่าหรือไม่
+  │   ├─ ใช่ → git push --force-with-lease origin HEAD:main
+  │   │          ↓
+  │   │        git fetch origin
+  │   │        ตรวจ git log อีกครั้ง
+  │   └─ ไม่ใช่ → ตรวจ remote และ upstream
+  └─ ไม่ใช่
+      ↓
+    ตรวจว่า push ไป repository และ branch ที่ถูกต้องหรือไม่</code></pre>
+
+        <h3>คำสั่งที่ควรเปรียบเทียบ</h3>
+        <table>
+          <thead><tr><th>คำสั่ง</th><th>สิ่งที่ถูก Push</th><th>ใช้เมื่อ</th></tr></thead>
+          <tbody>
+            <tr><td><code>git push origin main</code></td><td>local branch <code>main</code> → remote <code>main</code></td><td>ต้องการส่ง main ที่ checkout อยู่จริง</td></tr>
+            <tr><td><code>git push origin recovery-f64653d</code></td><td>local branch recovery → remote branch ชื่อเดียวกัน</td><td>ต้องการเก็บ branch recovery ไว้บน remote</td></tr>
+            <tr><td><code>git push origin HEAD:main</code></td><td>commit ปัจจุบันของ HEAD → remote <code>main</code></td><td>ต้องการส่ง commit ของ branch ปัจจุบันไปแทน main</td></tr>
+            <tr><td><code>git push --force-with-lease origin HEAD:main</code></td><td>บังคับให้ remote main ตรงกับ HEAD โดยตรวจว่าปลายทางไม่เปลี่ยนไปจากที่ fetch ล่าสุด</td><td>ใช้เมื่อ rebase/reset แล้วจำเป็นต้องเขียนประวัติใหม่</td></tr>
+          </tbody>
+        </table>
+        <div class="callout warn"><strong>ห้ามเริ่มด้วย <code>--force</code>:</strong> ต้องยืนยัน branch, commit, remote และผลกระทบก่อน เพราะ force push อาจเขียนทับประวัติบน GitHub และทำให้ commit ของผู้อื่นหายจาก branch ที่แชร์</div>
+        <div class="callout good"><strong>เช็กลิสต์สั้น:</strong> รัน <code>git branch --show-current</code>, <code>git status -sb</code>, <code>git remote -v</code>, <code>git fetch origin</code> และ <code>git log --oneline --decorate --all -10</code> แล้วจึงเลือกปลายทางของ push ให้ตรงกับ commit ที่ต้องการ</div>
       </section>
 
       <section class="section" id="flow">
